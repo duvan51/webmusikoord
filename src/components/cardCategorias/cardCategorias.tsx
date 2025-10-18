@@ -20,7 +20,7 @@ const CardCategoriaOne: React.FC<Props> = ({ filterWrite }) => {
     const fetchSongs = async () => {
       try {
         const categorias = await getCategorias();
-        console.log(categorias)
+        //console.log(categorias)
         const selected = categorias.find(
           (cat: Category) =>
             cat.name.trim().toLowerCase() === filterWrite.trim().toLowerCase()

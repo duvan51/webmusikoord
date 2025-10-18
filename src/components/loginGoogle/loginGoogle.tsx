@@ -5,7 +5,13 @@ import {
   CredentialResponse,
 } from "@react-oauth/google";
 import { LoginGoogle } from "@/lib/api";
+import {saveToStorage} from "@/utils/storage"; 
 import { jwtDecode } from "jwt-decode"; // 👈 usamos jwtDecode, no jwt_decode
+
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation"; 
+
+
 
 const clientId =
   "316106480930-cib0p16f3dc3tsrft0e98p28timv1st5.apps.googleusercontent.com";
@@ -18,22 +24,32 @@ interface GooglePayload {
 }
 
 function App() {
+   const router = useRouter();
 
    const handleSuccess = async (credentialResponse: CredentialResponse) => {
     const tokenGoogle = credentialResponse.credential;
 
     try {
-      // Aquí mandas el token de Google a tu backend
-      const response = await LoginGoogle(tokenGoogle);
+        // Mandas el token de Google al backend
+        const response = await LoginGoogle(tokenGoogle);
+        console.log("Login successful:", response);
+        console.log("Respuesta del backend:", response);
 
-      console.log("Respuesta del backend:", response);
-      localStorage.setItem("token", response.access_token);
-      
+
+
+        // Guardar toda la info
+        saveToStorage("user", response);
+
+        // Redirigir al home
+        router.push("/");
+
+        // Mensaje de éxito
+        toast.success("✅ Inicio de sesión con Google exitoso");
     } catch (error) {
-      console.error("Error enviando token al backend:", error);
+        console.error("Error enviando token al backend:", error);
+        toast.error("Ocurrió un error en el inicio de sesión con Google");
     }
-  };
-
+};
 
 
   const handleError = () => {

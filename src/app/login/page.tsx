@@ -6,6 +6,8 @@ import {saveToStorage} from "@/utils/storage"; // Asegúrate de que esta ruta se
 import { useRouter } from "next/navigation"; 
 
 import LoginGoogle from "@/components/loginGoogle/loginGoogle";
+import { toast } from "react-toastify";
+
 
 
 type LoginFormInputs = {
@@ -28,12 +30,19 @@ const LoginPage: React.FC = () => {
     login(data.email, data.password)
       .then(response => {
         console.log("Login successful:", response);
+        
         saveToStorage("user", response);
         router.push("/");
+        toast.success("✅ Inicio de sesión exitoso");
       })
       .catch(error => {
-        console.error("Login error:", error);
-      });
+      if (error.response && error.response.status === 401) {
+        toast.error("Contraseña incorrecta");
+      } else {
+        toast.error("Ocurrió un error en el inicio de sesión");
+      }
+      console.error("Login error:", error);
+    });
   };
 
 

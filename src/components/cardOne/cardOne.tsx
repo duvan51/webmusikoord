@@ -2,17 +2,21 @@
 
 import React, { useState, useEffect } from "react";
 import { songs, deleteSong } from "@/lib/api";
+import { useRouter } from 'next/navigation';  
+
+
+
 
 const CardSongOne = () => {
   const [data, setData] = useState([]);
-  //const navigate = useNavigate();
+  const router = useRouter(); 
 
   useEffect(() => {
     const fetchSongs = async () => {
       try {
         const song = await songs();
         setData(song);
-        console.log(song);
+        //console.log(song);
       } catch (error) {
         console.error("Error al obtener las canciones:", error);
       }
@@ -21,20 +25,19 @@ const CardSongOne = () => {
     fetchSongs();
   }, []);
 
-  {
-    /*
-  const handleSelectSong = (song) => {
-    navigate(`/song/${song.id}`);
+  
+  const handleSelectSong = (id: string) => {
+    router.push(`/songs/${id}`); // ✅ así navegas en Next.js
   };
-  */
-  }
 
+
+  
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-5">
       {data.slice(0, 8).map((song, index) => (
         <div
           key={song.id}
-          onClick={() => console.log(song)}
+          onClick={() => handleSelectSong(song.id)}
           style={{
             height: 100,
             backgroundColor: "white",

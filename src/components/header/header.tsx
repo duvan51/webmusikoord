@@ -45,7 +45,7 @@ const Header = () => {
 
 
 
-  console.log("user en header:", user);
+  //console.log("user en header:", user);
 
   const handleLogout = () => {
     localStorage.removeItem("token");

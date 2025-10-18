@@ -137,7 +137,7 @@ export default function Home() {
                 <div className="font-bold">{grupo?.nombre}</div>
                 <div>
                   {grupo?.repertorios?.slice(0, 1).map((rep) => (
-                    console.log("grupo==> ",grupo),
+                    //console.log("grupo==> ",grupo),
                     <div key={rep.id}>
                       <h4 className="text-xl font-bold mb-4">{rep.nombre}</h4>
                       <div className="flex gap-4 h-full">
