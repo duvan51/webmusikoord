@@ -39,7 +39,7 @@ const CardCategoriaOne: React.FC<Props> = ({ filterWrite }) => {
       {/* Imagen */}
       <div className="w-1/5 flex justify-center items-center">
         <img
-          src={categoria?.image_url || "@/logo.png"}
+          src={categoria?.image_url || "/logo.png"}
           alt={categoria?.name || "Categoría"}
           className="w-4/5 h-4/5 object-contain"
         />

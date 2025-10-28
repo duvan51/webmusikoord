@@ -1,0 +1,53 @@
+/* 🎭 MODO TEATRO ESTILOS */
+.modo-teatro {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.modo-teatro-contenedor {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.teatro-col {
+  flex: 1;
+  height: 100%;
+  overflow-y: auto;
+  padding: 2rem;
+}
+
+.teatro-col.izquierda {
+  background: #111;
+}
+
+.teatro-col.derecha {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.salir-teatro {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  background: #333;
+  color: #fff;
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  z-index: 10000;
+}
+
+.salir-teatro:hover {
+  background: #555;
+}

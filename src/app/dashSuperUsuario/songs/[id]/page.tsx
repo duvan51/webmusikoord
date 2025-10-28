@@ -6,6 +6,11 @@ import Link from "next/link";
 import { getSongById } from "@/lib/api";
 import Breadcrumbs from "@/components/breadcrumbs/breadcrumbs";
 import GenerateImage from "@/components/generateImage/generateImage";
+import MultitrackAudioEditor from "@/components/MultitrackPlayers/MultiTrackPlayer";
+
+
+
+
 // Ajusta el tipo correctamente
 interface LyricLine {
   text: string;
@@ -60,18 +65,26 @@ const ViewSongUnique = () => {
   }
 
   return (
-    <div className="w-full text-white rounded-lg shadow-md p-4 sm:p-6 bg-gray-900">
+    <div className="w-full text-white rounded-lg shadow-md p-4 sm:p-6 ">
       <Breadcrumbs />
 
       {/* Encabezado y botón de editar */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2">
         <h1 className="text-2xl sm:text-3xl font-bold">{songData?.name}</h1>
-        <Link
-          href={`/dashSuperUsuario/songs/${songData.id}/edit`}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white text-sm text-center"
-        >
-          Editar Canción
-        </Link>
+        <div className="">
+          <Link
+            href={`/dashSuperUsuario/songs/${songData.id}/edit`}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white text-sm text-center"
+          >
+            Editar Canción
+          </Link>
+          {/* Imagen generada */}
+          <GenerateImage
+            name={songData.name}
+            author={songData.autor}
+            song={songData.song}
+          />
+        </div>
       </div>
 
       {/* Categorías */}
@@ -133,12 +146,10 @@ const ViewSongUnique = () => {
         </div>
       </div>
 
-      {/* Imagen generada */}
-      <GenerateImage
-        name={songData.name}
-        author={songData.autor}
-        song={songData.song}
-      />
+      {/* Multitrack Audio Editor */}
+      <div className="mt-6">
+        <MultitrackAudioEditor tracks={songData.tracks} />
+      </div>
     </div>
   );
 };

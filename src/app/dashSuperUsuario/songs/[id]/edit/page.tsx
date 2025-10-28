@@ -6,6 +6,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Breadcrumbs from "@/components/breadcrumbs/breadcrumbs";
 
+import UploadMultitrackForm from "@/components/multitrackForm/multitrackForm";
+
 export default function EditSongPage() {
   const { id } = useParams();
   const [name, setName] = useState("");
@@ -14,6 +16,9 @@ export default function EditSongPage() {
   const [songComplet, setSongComplet] = useState([]);
   const [chordSelector, setChordSelector] = useState(null);
   const [customChord, setCustomChord] = useState("");
+  const [dataSong, setSongData] = useState(null);
+
+  const [refresh, setRefresh] = useState(false);
 
   const CHORDS = [
     "C", "Cm", "D", "Dm", "E", "Em", "F", "Fm",
@@ -25,7 +30,11 @@ export default function EditSongPage() {
 
   useEffect(() => {
     if (id) fetchSong();
-  }, [id]);
+  }, [id, refresh]);
+
+  const handleRefreshTracks = () => {
+    setRefresh((prev) => !prev); // 🔁 fuerza que se recargue la data
+  };
 
   const fetchSong = async () => {
     try {
@@ -33,6 +42,7 @@ export default function EditSongPage() {
       setName(data.name);
       setAutor(data.autor);
       setSongComplet(data.song);
+      setSongData(data);
 
       let textRebuild = "";
       data.song.forEach((section) => {
@@ -260,7 +270,15 @@ const applyChord = (rawChord) => {
             </div>
           </div>
         )}
+
       </div>
+      
+       <div className="flex flex-row py-4 gap-3">
+        <UploadMultitrackForm  dataSong={dataSong} onRefresh={handleRefreshTracks}   />
+       </div>
+      
+
+
     </div>
   );
 }
