@@ -49,17 +49,41 @@ const Page = () => {
   }, []);
 
   // ✅ Manejador de búsqueda en vivo
-  const handleSearchTermSubmit = (data) => {
-    setHasSearched(true);
-    if (!data || (!data.songs.length && !data.repertorios.length)) {
-      setSearchResults([]);
-      setRepertorioResults([]);
-      return;
-    }
+  const handleSearchTermSubmit = (term: string) => {
+  setHasSearched(true);
 
-    setSearchResults(data.songs || []);
-    setRepertorioResults(data.repertorios || []);
-  };
+  // 🔒 Seguridad
+  if (!term || term.trim().length === 0) {
+    setSearchResults([]);
+    setRepertorioResults([]);
+    return;
+  }
+
+  // 🔍 Filtrar canciones
+  const filteredSongs = allSongs.filter((song) =>
+    (song.title || song.name)
+      ?.toLowerCase()
+      .includes(term.toLowerCase())
+  );
+
+  // 🔍 Filtrar repertorios
+  const filteredRepertorios = allRepertorios.filter((rep) =>
+    (rep.nombre || rep.titulo)
+      ?.toLowerCase()
+      .includes(term.toLowerCase())
+  );
+
+  setSearchResults(filteredSongs);
+  setRepertorioResults(filteredRepertorios);
+};
+
+  const slugify = (text: string) =>
+    text
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
 
   const handleGoToRepertorio = (id: number) => {
     router.push(`/repertorios/${id}`);
@@ -147,15 +171,15 @@ const Page = () => {
             <SongCard
               key={cancion.id}
               cancion={cancion}
-              onClick={() => router.push(`/songs/${cancion.id}`)}
+              onClick={() =>
+                router.push(`/songs/${slugify(cancion.name)}-${cancion.id}`)
+              }
             />
           ))}
         </div>
 
-
         <h2 className="text-xl font-semibold mb-2 py-2">Repertorios</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          
           {allRepertorios.map((rep) => (
             <div
               onClick={() => handleGoToRepertorio(rep.id)}

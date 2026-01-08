@@ -5,10 +5,12 @@ import { getGroupByID } from "@/lib/api";
 import Footer from "@/components/footer/footer";
 import Header from "@/components/header/header";
 import CardSongOne from "@/components/cardOne/cardOne";
+import CardSongTwo from "@/components/cardOne/cardTwo";
 import { Search } from "lucide-react";
 import Youtube from "@/components/videos/youtube";
 import CardCategorias from "@/components/cardCategorias/cardCategorias";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function Home() {
   const router = useRouter();
@@ -227,6 +229,20 @@ export default function Home() {
           <div className="px-5 mt-3 space-y-4 block gap-4 md:flex">
             <CardCategorias filterWrite="Adoracion" />
             <CardCategorias filterWrite="Alabanza" />
+          </div>
+
+          <div className="py-10">
+            <CardSongTwo />
+          </div>
+
+          <div className="relative w-full h-[400px] px-5 mt-3">
+            <Image
+              src="/assets/2.gif"
+              alt="Más categorías"
+              fill
+              className="rounded-lg object-cover"
+              priority={false}
+            />
           </div>
         </div>
       </main>

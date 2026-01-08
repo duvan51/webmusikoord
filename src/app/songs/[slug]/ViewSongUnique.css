@@ -1,0 +1,155 @@
+/* 🎭 MODO TEATRO ESTILOS */
+.modo-teatro {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.modo-teatro-contenedor {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.teatro-col {
+  flex: 1;
+  height: 100%;
+  overflow-y: auto;
+  padding: 2rem;
+}
+
+.teatro-col.izquierda {
+  background: #111;
+}
+
+.teatro-col.derecha {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.salir-teatro {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  background: #333;
+  color: #fff;
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  z-index: 10000;
+}
+
+.salir-teatro:hover {
+  background: #555;
+}
+
+
+
+
+
+/* ✅ Ajuste responsivo para acordes/letras sin desorden */
+/* Contenedor general de scroll */
+.song-scroll-container {
+  overflow-y: auto;
+  overflow-x: auto;
+  white-space: nowrap;
+  width: 100%;
+  max-height: 80vh;
+  min-width: 700px;
+  padding: 1rem;
+}
+
+/* Cada sección de la canción */
+.song-section {
+  display: block;
+  margin-bottom: 1.5rem;
+  color: #000;
+}
+
+/* Línea de acordes */
+.song-line {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  justify-content: flex-start;
+  white-space: pre;
+}
+
+/* Bloque para cada acorde */
+.chord-block {
+  width: 10px;
+  height: 16px;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #a855f7;
+  flex-shrink: 0; /* Evita que se encoja */
+}
+
+/* Texto de la letra */
+.lyric-text {
+  white-space: pre;
+  font-family: monospace;
+  font-size: 1rem;
+  color: #222;
+  line-height: 1.6;
+}
+
+/* Responsivo — escala general sin deformar los acordes */
+@media (max-width: 768px) {
+  .song-scroll-container {
+    transform: scale(0.95);
+    transform-origin: top left;
+  }
+}
+
+@media (max-width: 480px) {
+  .song-scroll-container {
+    transform: scale(0.75);
+    transform-origin: top left;
+  }
+}
+
+/* Estilos modo teatro */
+.modo-teatro {
+  background-color: #000;
+  color: white;
+}
+
+.modo-teatro-contenedor {
+  display: flex;
+  height: 100vh;
+}
+
+.teatro-col {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.teatro-col.derecha {
+  background-color: #ffffff;
+  height: 100%;
+}
+
+.salir-teatro {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  background: #c0392b;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  z-index: 10;
+}

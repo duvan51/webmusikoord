@@ -2,27 +2,44 @@
 import React, { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { songs, getCategorias } from "@/lib/api";
 
 export default function Dashboard() {
+    const [data, setData] = useState([]);
+    const [Countsongs, setCountsongs] = useState([]);
   const [stats, setStats] = useState({
-    songs: 0,
     categorias: 0,
     usuarios: 0,
     registros: 0,
     grupos: 0,
   });
 
+
+   useEffect(() => {
+      const fetchSongs = async () => {
+        const res = await songs();
+        setCountsongs(res.length)
+      };
+      fetchSongs();
+    }, []);
+
+    console.log(data)
+
+
+
+
   useEffect(() => {
     getStats();
   }, []);
+
 
   const getStats = async () => {
     try {
       // Aquí deberías llamar a tu API para obtener los datos reales
       const data = await fetch("/api/stats").then(res => res.json());
 
+
       setStats({
-        songs: data.totalSongs,
         categorias: data.totalCategorias,
         usuarios: data.totalUsuarios,
         registros: data.totalRegistros,
@@ -51,7 +68,7 @@ export default function Dashboard() {
       <h1 className="text-white text-3xl font-bold mb-6">Dashboard</h1>
 
       <div className="flex flex-wrap gap-4">
-        <Card title="Canciones" value={stats.songs} />
+        <Card title="Canciones" value={Countsongs} />
         <Card title="Categorías" value={stats.categorias} />
         <Card title="Usuarios" value={stats.usuarios} />
         <Card title="Registros" value={stats.registros} />

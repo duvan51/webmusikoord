@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { search } from "@/lib/api"; // Asegúrate que está bien exportado
+import { useEffect, useState, useRef } from "react";
+import { search } from "@/lib/api";
 import { Search } from "lucide-react";
 
 type Props = {
-  onSearchTermSubmit: (data: any) => void; // usa el mismo nombre que en el padre
+  onSearchTermSubmit: (term: string) => void;
 };
 
 export default function Buscador({ onSearchTermSubmit }: Props) {
@@ -15,15 +15,16 @@ export default function Buscador({ onSearchTermSubmit }: Props) {
     repertorios: [],
   });
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
+  // 🔍 Buscar con debounce
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
       if (searchTerm.length > 1) {
         search(searchTerm)
           .then((data) => {
-            setResults(data); // ← Aquí llega el { songs: [], repertorios: [] }
+            setResults(data);
             setShowSuggestions(true);
-            onSearchTermSubmit(data);
           })
           .catch((err) => console.error("Error al buscar:", err));
       } else {
@@ -35,14 +36,33 @@ export default function Buscador({ onSearchTermSubmit }: Props) {
     return () => clearTimeout(delayDebounce);
   }, [searchTerm]);
 
+  // 🖱️ Click fuera → cerrar sugerencias
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // ⏎ Enter
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       setShowSuggestions(false);
+      onSearchTermSubmit(searchTerm);
     }
   };
 
   return (
-    <div className="relative w-full max-w-xl mx-auto mt-10">
+    <div ref={wrapperRef} className="relative w-full max-w-xl mx-auto mt-10">
       <div className="flex items-center gap-2 border border-gray-300 rounded-lg px-4 py-2">
         <Search className="text-gray-400" />
         <input
@@ -58,35 +78,57 @@ export default function Buscador({ onSearchTermSubmit }: Props) {
       {showSuggestions &&
         (results.songs.length > 0 || results.repertorios.length > 0) && (
           <div className="absolute bg-white shadow-lg rounded-lg w-full mt-2 z-50 p-4">
+            {/* 🎵 Canciones */}
             <h4 className="text-sm font-semibold text-gray-700 mb-2">
               Canciones
             </h4>
+
             {results.songs.length === 0 && (
               <p className="text-gray-400 text-sm">No hay resultados</p>
             )}
-            {results.songs.map((song) => (
-              <div
-                key={song.id}
-                className="p-2 hover:bg-gray-100 cursor-pointer rounded"
-              >
-                🎵 {song.title || song.name}
-              </div>
-            ))}
 
+            {results.songs.map((song) => {
+              const value = song.title || song.name;
+              return (
+                <div
+                  key={song.id}
+                  className="p-2 hover:bg-gray-100 cursor-pointer rounded"
+                  onClick={() => {
+                    setSearchTerm(value);
+                    setShowSuggestions(false);
+                    onSearchTermSubmit(value);
+                  }}
+                >
+                  🎵 {value}
+                </div>
+              );
+            })}
+
+            {/* 📁 Repertorios */}
             <h4 className="text-sm font-semibold text-gray-700 mt-4 mb-2">
               Repertorios
             </h4>
+
             {results.repertorios.length === 0 && (
               <p className="text-gray-400 text-sm">No hay resultados</p>
             )}
-            {results.repertorios.map((rep) => (
-              <div
-                key={rep.id}
-                className="p-2 hover:bg-gray-100 cursor-pointer rounded"
-              >
-                📁 {rep.nombre || rep.titulo}
-              </div>
-            ))}
+
+            {results.repertorios.map((rep) => {
+              const value = rep.nombre || rep.titulo;
+              return (
+                <div
+                  key={rep.id}
+                  className="p-2 hover:bg-gray-100 cursor-pointer rounded"
+                  onClick={() => {
+                    setSearchTerm(value);
+                    setShowSuggestions(false);
+                    onSearchTermSubmit(value);
+                  }}
+                >
+                  📁 {value}
+                </div>
+              );
+            })}
           </div>
         )}
     </div>

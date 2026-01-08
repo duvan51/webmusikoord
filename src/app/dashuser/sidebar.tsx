@@ -10,6 +10,7 @@ const navItems = [
  
   { href: "/dashuser/createsongs", label: "Crear canciones" },
   { href: "/dashuser/settings", label: "Configuración" },
+  { href: "/", label: "Inicio" },
 ];
 
 export default function Sidebar() {

@@ -3,9 +3,8 @@
 import React, { useEffect } from "react";
 import { getUserById } from "@/lib/api";
 import { getFromStorage } from "@/utils/storage";
-import { tiempoTranscurrido } from '@/utils/tiempoTranscurrido';
-import { useRouter } from 'next/navigation';
-
+import { tiempoTranscurrido } from "@/utils/tiempoTranscurrido";
+import { useRouter } from "next/navigation";
 
 type UserStorage = {
   access_token: string;
@@ -36,38 +35,64 @@ const page = () => {
     }
   }, []);
 
-
-   
-   // console.log("tiempoTranscurrido:", tiempoTranscurrido('2025-07-22T04:13:00.000000Z'));
+  // console.log("tiempoTranscurrido:", tiempoTranscurrido('2025-07-22T04:13:00.000000Z'));
 
   // console.log("user en header:", user);
 
   return (
-    <div className="p-4">
+    <div className="p-6">
       <h1 className="text-white text-2xl font-bold mb-4">Grupos</h1>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div
+          onClick={() => router.push("/dashuser/grupos/crear")}
+          className="
+      bg-white/80
+      border-2 border-dashed border-gray-300
+      p-6
+      rounded
+      shadow-sm
+      cursor-pointer
+      flex
+      flex-col
+      items-center
+      justify-center
+      text-gray-500
+      hover:border-indigo-500
+      hover:text-indigo-600
+      hover:bg-indigo-50
+      transition
+    "
+        >
+          <div className="text-5xl font-light mb-2">+</div>
+          <div className="font-semibold">Crear grupo</div>
+        </div>
+        {/* 📦 GRUPOS EXISTENTES */}
         {user?.groups?.map((group: any) => (
-          <div key={group.id} className="bg-white p-4 rounded shadow"
-            onClick={()=> router.push(`/dashuser/grupos/${group.id}`)}
+          <div
+            key={group.id}
+            className="bg-white p-4 rounded shadow"
+            onClick={() => router.push(`/dashuser/grupos/${group.id}`)}
           >
             <h2 className="text-l font-bold mb-2">{group.nombre}</h2>
             <div className="flex flex-col gap-2">
-                {group?.repertorios?.map((repertorio: any) => (
-                    <div key={repertorio.id} 
-                        className="text-sm bg-gray-100 p-2 rounded cursor-pointer hover:bg-gray-200"
-                        >
-                        <div className=" flex justify-between">
-                            <div>{repertorio.nombre}</div>
-                            <div className="text-xs">{tiempoTranscurrido(repertorio.created_at)}</div>
-                        </div>
+              {group?.repertorios?.map((repertorio: any) => (
+                <div
+                  key={repertorio.id}
+                  className="text-sm bg-gray-100 p-2 rounded cursor-pointer hover:bg-gray-200"
+                >
+                  <div className=" flex justify-between">
+                    <div>{repertorio.nombre}</div>
+                    <div className="text-xs">
+                      {tiempoTranscurrido(repertorio.created_at)}
                     </div>
-                ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         ))}
       </div>
-    
     </div>
   );
 };

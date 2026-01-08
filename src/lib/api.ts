@@ -1,4 +1,6 @@
 import apiInstancia from '@/lib/axiosInstance'
+import axios from "axios";
+
 
 export const songs = async () => {
   try {
@@ -257,13 +259,18 @@ export const createCustomSong = async (data:{}) => {
   }
 };
 
-export const createCustomSongMultiple = async (data:{}) => {
+export const createCustomSongMultiple = async (data: any) => {
   try {
     const response = await apiInstancia.post(`/custom-songs/multiple`, data);
-    // console.log("este es el response=> ",response.data)
     return response.data;
   } catch (error) {
-    console.error("Error al crear la custon songs de arrays:", error);
+    if (axios.isAxiosError(error)) {
+      console.error("STATUS:", error.response?.status);
+      console.error("DATA:", error.response?.data);
+      console.error("HEADERS:", error.response?.headers);
+    } else {
+      console.error("ERROR DESCONOCIDO:", error);
+    }
     throw error;
   }
 };

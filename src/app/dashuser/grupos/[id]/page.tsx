@@ -25,7 +25,6 @@ const page = () => {
 
     //console.log(idGroup, "idGroup");
 
-
     //console.log(params, "params");
 
     if (token && idGroup) {
@@ -42,7 +41,7 @@ const page = () => {
     }
   }, []);
 
-  //console.log("data:", data);
+  console.log("data:", data);
 
   return (
     <div>
@@ -54,9 +53,40 @@ const page = () => {
               <div className="text-white text-xl">{data?.nombre}</div>
               <div className="text-white">{data?.length} miembros</div>
               <div className="flex gap-2">
-                <div className="w-10 h-10 rounded-full bg-white">1</div>
-                <div className="w-10 h-10 rounded-full bg-white">2</div>
-                <div className="w-10 h-10 rounded-full bg-white">3</div>
+                <div className="flex items-center gap-2">
+                  {data?.users?.map((user: any) => {
+                    const initial = user.name?.charAt(0).toUpperCase() || "?";
+
+                    return (
+                      <div
+                        key={user.id}
+                        title={user.name}
+                        className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white font-bold overflow-hidden"
+                      >
+                        {user.profile_picture ? (
+                          <img
+                            src={user.profile_picture}
+                            alt={user.name}
+                            className="w-full h-full object-cover rounded-full"
+                          />
+                        ) : (
+                          <span className="text-lg">{initial}</span>
+                        )}
+                      </div>
+                    );
+                  })}
+
+                  {/* ➕ Botón agregar persona */}
+                  <button
+                    onClick={() => {
+                      console.log("Agregar persona");
+                      // aquí puedes abrir modal
+                    }}
+                    className="w-10 h-10 rounded-full border-2 border-dashed border-gray-400 flex items-center justify-center text-gray-500 hover:border-indigo-500 hover:text-indigo-500 transition"
+                  >
+                    <span className="text-xl font-bold">+</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>

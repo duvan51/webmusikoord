@@ -15,7 +15,7 @@ export default function DashLayout({
         {/**<Topbar /> */}
         <main className="p-6 overflow-y-auto">
           <div
-            className="min-h-screen flex flex-col"
+            className="min-h-screen flex flex-col p-4 rounded-lg"
             style={{
               background: "linear-gradient(180deg, #251a4e 0%, #100929 100%)",
             }}
