@@ -6,7 +6,7 @@ import Link from "next/link";
 import { getSongById } from "@/lib/api";
 import Breadcrumbs from "@/components/breadcrumbs/breadcrumbs";
 import GenerateImage from "@/components/generateImage/generateImage";
-import MultitrackAudioEditor from "@/components/MultitrackPlayers/MultiTrackPlayer";
+import MultitrackAudioEditor from "@/components/MultitrackPlayers/MultitrackPlayer";
 
 
 

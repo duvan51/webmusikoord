@@ -1,4 +1,4 @@
-import MultiTrackPlayer from "@/components/MultitrackPlayers/MultiTrackPlayer";
+import MultiTrackPlayer from "@/components/MultitrackPlayers/MultitrackPlayer";
 
 export default function Home() {
   return (

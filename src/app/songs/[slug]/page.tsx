@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { getSongById } from "@/lib/api";
 import Breadcrumbs from "@/components/breadcrumbs/breadcrumbs";
 import CardSongs from "@/components/cardSongs/cardSongs";
-import MultitrackAudioEditor from "@/components/MultitrackPlayers/MultiTrackPlayer";
+import MultitrackAudioEditor from "@/components/MultitrackPlayers/MultitrackPlayer"
 import "./ViewSongUnique.css";
 
 interface LyricLine {
