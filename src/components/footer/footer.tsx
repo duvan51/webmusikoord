@@ -19,33 +19,30 @@ const Footer = () => {
       setIsSuperUser(true);
     }
   }, []);
-
   return (
-    <footer className="text-white text-sm p-4 text-center">
+    <footer className="text-[var(--text-secondary)] text-sm p-8 text-center border-t border-[var(--glass-border)] transition-colors duration-500">
       <p>&copy; {new Date().getFullYear()} Musikoord. Todos los derechos reservados.</p>
 
-      <div className="flex w-full pt-4">
-        <div className="w-1/3 flex flex-col gap-2">
-          <div className="font-bold text-base">Musikoord</div>
+      <div className="flex flex-col md:flex-row w-full pt-8 gap-8 items-center md:items-start justify-center">
+        <div className="flex flex-col gap-3">
+          <div className="font-black text-xl text-[var(--text-primary)] mb-2">Musikoord<span className="text-accent">.</span></div>
 
-          <Link href="/">Login</Link>
+          <div className="flex flex-wrap justify-center gap-6 font-bold uppercase tracking-widest text-[10px]">
+            <Link href="/" className="hover:text-primary transition-colors">Inicio</Link>
+            <Link href="/songs" className="hover:text-primary transition-colors">Canciones</Link>
+            <Link href="/repertorios" className="hover:text-primary transition-colors">Repertorios</Link>
 
-          {/* 👑 SOLO SUPER USUARIO */}
-          {isSuperUser && (
-            <Link
-              href="/dashSuperUsuario"
-              className="text-yellow-400 font-semibold hover:underline"
-            >
-              Panel Superusuario
-            </Link>
-          )}
-
-          <Link href="/songs">Canciones</Link>
-          <Link href="/repertorios">Repertorios</Link>
+            {/* 👑 SOLO SUPER USUARIO */}
+            {isSuperUser && (
+              <Link
+                href="/dashSuperUsuario"
+                className="text-yellow-500 hover:text-yellow-600 transition-colors"
+              >
+                Panel Admin
+              </Link>
+            )}
+          </div>
         </div>
-
-        <div className="w-1/3">2</div>
-        <div className="w-1/3">3</div>
       </div>
     </footer>
   );

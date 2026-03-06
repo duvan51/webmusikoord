@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const instance = axios.create({
   baseURL: 'https://api.musikoord.com/api',
-  timeout: 5000,
+  timeout: 15000, // Aumentado a 15 segundos
   headers: {
     'Content-Type': 'application/json',
   },

@@ -1,78 +1,59 @@
 "use client";
+
 import React, { useState } from "react";
 import { createSong } from "@/lib/api";
 import Breadcrumbs from "@/components/breadcrumbs/breadcrumbs";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import {
+  Music,
+  Plus,
+  Trash2,
+  Save,
+  Type,
+  User,
+  Layers,
+  Search,
+  X,
+  ChevronRight,
+  Loader2,
+  Eye,
+  PenTool
+} from "lucide-react";
 
-export default function DashSuperUsuario() {
+export default function CreateSongPage() {
   const [name, setName] = useState("");
   const [autor, setAutor] = useState("");
   const [texts, setTexts] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
   const [songComplet, setSongComplet] = useState<
-    { type: string; lyrics: { text: string; chords: string[] }[] }[]
+    { type: string; lyrics: { text: string; chords: (string | null)[] }[] }[]
   >([]);
   const [chordSelector, setChordSelector] = useState<{
     sectionIdx: number;
     lineIdx: number;
-    wordIdx: number;
+    charIdx: number;
   } | null>(null);
   const [customChord, setCustomChord] = useState("");
 
   const CHORDS = [
-    "C",
-    "Cm",
-    "D",
-    "Dm",
-    "E",
-    "Em",
-    "F",
-    "Fm",
-    "G",
-    "Gm",
-    "A",
-    "Am",
-    "B",
-    "Bm",
-    "C#",
-    "C#m",
-    "D#",
-    "D#m",
-    "F#",
-    "F#m",
-    "G#",
-    "G#m",
-    "A#",
-    "A#m",
+    "C", "Cm", "D", "Dm", "E", "Em", "F", "Fm", "G", "Gm", "A", "Am", "B", "Bm",
+    "C#", "C#m", "D#", "D#m", "F#", "F#m", "G#", "G#m", "A#", "A#m"
   ];
 
-  const regex = /^(VERSO \d+|CORO|PUENTE|INTRO|OUTRO)/i;
+  const SECTION_REGEX = /^(VERSO \d+|CORO|PUENTE|INTRO|OUTRO)/i;
 
   const handleSong = (text: string) => {
     setTexts(text);
-    const lines = text
-      .split("\n")
-      .map((line) => line.trim())
-      .filter((line) => line !== "");
+    const lines = text.split("\n").map(l => l.trim()).filter(l => l !== "");
 
-    let structuredSong: {
-      type: string;
-      lyrics: { text: string; chords: string[] }[];
-    }[] = [];
-
+    let structuredSong: any[] = [];
     let currentSection: any = null;
 
     lines.forEach((line) => {
-      if (regex.test(line)) {
-        const upperLine = line
-          .toLowerCase()
-          .replace(/^verso \d+/i, (match) => match.toUpperCase())
-          .replace(/^coro/i, "CORO")
-          .replace(/^puente/i, "PUENTE")
-          .replace(/^intro/i, "INTRO")
-          .replace(/^outro/i, "OUTRO");
-
-        currentSection = { type: upperLine, lyrics: [] };
+      if (SECTION_REGEX.test(line)) {
+        const type = line.toUpperCase();
+        currentSection = { type, lyrics: [] };
         structuredSong.push(currentSection);
       } else if (currentSection) {
         currentSection.lyrics.push({ text: line, chords: [] });
@@ -82,222 +63,261 @@ export default function DashSuperUsuario() {
     setSongComplet(structuredSong);
   };
 
-  const addText = (newText: string) => {
-    setTexts((prevText) => {
-      const updatedText = prevText + `\n${newText}`;
-      handleSong(updatedText);
-      return updatedText;
-    });
+  const addSection = (label: string) => {
+    const newText = texts ? `${texts}\n\n${label}\n` : `${label}\n`;
+    handleSong(newText);
   };
 
-  const handleSelectChord = (
-    sectionIdx: number,
-    lineIdx: number,
-    wordIdx: number
-  ) => {
-    setChordSelector({ sectionIdx, lineIdx, wordIdx });
-    setCustomChord("");
-  };
-
-  const applyChord = (rawChord: string) => {
+  const applyChord = (chord: string | null) => {
     if (!chordSelector) return;
+    const { sectionIdx, lineIdx, charIdx } = chordSelector;
 
-    const chord =
-      rawChord.charAt(0).toUpperCase() + rawChord.slice(1).toLowerCase();
-
-    setSongComplet((prev) => {
+    setSongComplet(prev => {
       const updated = [...prev];
-      const { sectionIdx, lineIdx, wordIdx } = chordSelector;
       const lyricsLine = updated[sectionIdx].lyrics[lineIdx];
-
       const charCount = lyricsLine.text.length;
+
       if (!lyricsLine.chords || lyricsLine.chords.length !== charCount) {
         lyricsLine.chords = new Array(charCount).fill(null);
       }
-      lyricsLine.chords[wordIdx] = chord;
+
+      lyricsLine.chords[charIdx] = chord;
       return updated;
     });
-
     setChordSelector(null);
   };
 
-  const handleCustomChordSubmit = () => {
-    if (customChord.trim() !== "") {
-      applyChord(customChord.trim());
-    }
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result = await createSong({
-      name,
-      autor,
-      song: songComplet,
-    });
+    if (!name || !autor || songComplet.length === 0) {
+      toast.warning("Por favor completa los datos de la canción");
+      return;
+    }
 
-    if (result) {
-      toast.success("✅ Canción creada con éxito");
-      setName("");
-      setAutor("");
-      setTexts("");
-      setSongComplet([]);
-    } else {
-      toast.error("❌ No se pudo crear la canción");
+    setIsSaving(true);
+    try {
+      const result = await createSong({
+        name,
+        autor,
+        song: songComplet,
+      });
+
+      if (result) {
+        toast.success("✅ Canción creada con éxito");
+        setName("");
+        setAutor("");
+        setTexts("");
+        setSongComplet([]);
+      } else {
+        toast.error("❌ Error al crear la canción");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Error en el servidor");
+    } finally {
+      setIsSaving(false);
     }
   };
 
   return (
-    <div>
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <ToastContainer position="top-right" theme="dark" />
       <Breadcrumbs />
-      <ToastContainer position="top-right" />
-      <header className="flex justify-between items-center px-8 py-6">
-        <div className="text-white text-2xl font-bold">Musikoord</div>
-        <button className="bg-white text-[#251a4e] px-4 py-2 rounded shadow hover:bg-gray-200 transition">
-          Iniciar sesión
-        </button>
-      </header>
 
-      <div className="flex flex-row py-4 gap-3 px-2">
-        <main className="w-1/2 p-4 bg-white">
-          <div className="bg-white bg-opacity-10 rounded-xl shadow-lg w-full">
-            <h2 className="text-xl font-semibold mb-4">¡Explora Musikoord!</h2>
-            <p className="mb-6">
-              Descubre, organiza y disfruta tu música favorita en una sola app.
-            </p>
-            <button className="bg-[#251a4e] text-white px-4 py-2 rounded hover:bg-[#100929] transition mb-4">
-              Probar ahora
-            </button>
-
-            <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
-              <input
-                className="w-full mb-2 px-3 py-2 rounded bg-white text-[#251a4e] border"
-                type="text"
-                placeholder="Titulo de canción"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-              <input
-                className="w-full mb-2 px-3 py-2 rounded bg-white text-[#251a4e] border"
-                type="text"
-                placeholder="Autor"
-                value={autor}
-                onChange={(e) => setAutor(e.target.value)}
-                required
-              />
-              <div className="flex gap-2 mb-2">
-                {["Verso 1", "Coro", "Puente"].map((label) => (
-                  <button
-                    type="button"
-                    key={label}
-                    className="bg-[#251a4e] text-white px-2 py-1 rounded"
-                    onClick={() => addText(label)}
-                  >
-                    Agregar {label}
-                  </button>
-                ))}
-              </div>
-              <textarea
-                className="w-full mb-4 px-3 py-2 rounded bg-white text-[#251a4e] border"
-                rows={6}
-                placeholder="Escribe la letra aquí..."
-                value={texts}
-                onChange={(e) => handleSong(e.target.value)}
-                required
-              />
-              <button
-                type="submit"
-                className="bg-[#251a4e] text-white px-4 py-2 rounded hover:bg-[#100929] transition cursor-pointer"
-              >
-                Guardar Canción
-              </button>
-            </form>
+      {/* Header / Actions */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-2">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-primary/10 rounded-xl text-primary ring-1 ring-primary/20">
+              <Plus size={24} />
+            </div>
+            <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">Crear Canción</h1>
           </div>
-        </main>
+          <p className="text-sm text-[var(--text-secondary)] opacity-60 font-medium">Define la letra y estructura de acordes para el catálogo maestro.</p>
+        </div>
 
-        <div className="w-1/2 p-4 bg-white">
-          <div className="text-black text-lg font-bold">{name}</div>
-          <div className="text-black text-md mb-2">{autor}</div>
-          <div className="w-full flex">
-            <div className="w-full flex flex-col gap-2 bg-white px-1 overflow-x-auto">
-              {songComplet.map((section, sectionIdx) => (
-                <div key={sectionIdx} className="mt-4">
-                  <div className="text-[#4A90E2] font-bold">{section.type}</div>
+        <button
+          onClick={handleSubmit}
+          disabled={isSaving}
+          className="flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
+        >
+          {isSaving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
+          Guardar Canción
+        </button>
+      </div>
 
-                  {section.lyrics.map((lyric, lineIdx) => (
-                    <div key={lineIdx} className="mb-2">
-                      {/* Línea de acordes solo para escritorio */}
-                      <div className="hidden md:flex">
-                        {Array.from({ length: lyric.text.length }).map(
-                          (_, charIdx) => (
-                            <div
-                              key={charIdx}
-                              className="w-[14px] h-4 text-xs text-purple-700 font-semibold text-center cursor-pointer"
-                              onClick={() =>
-                                handleSelectChord(sectionIdx, lineIdx, charIdx)
-                              }
-                            >
-                              {lyric.chords?.[charIdx] ?? ""}
-                            </div>
-                          )
-                        )}
-                      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
+        {/* Left: Editor */}
+        <div className="space-y-6">
+          <div className="bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded-[2.5rem] p-6 space-y-6 shadow-xl">
+            <div className="flex items-center gap-3 mb-2">
+              <Type size={18} className="text-primary" />
+              <h2 className="text-xs font-black uppercase tracking-widest text-[var(--text-secondary)] opacity-40">Metadatos y Letra</h2>
+            </div>
 
-                      {/* Línea de texto normal */}
-                      <div className="whitespace-pre-wrap text-base">
-                        {lyric.text}
-                      </div>
-                    </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)] opacity-40 ml-4">Título</label>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-primary/40 group-focus-within:text-primary transition-colors">
+                    <Music size={16} />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Ej: Te Amo Dios..."
+                    className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/5 rounded-2xl focus:border-primary/40 outline-none transition-all font-bold"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)] opacity-40 ml-4">Autor / Artista</label>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-primary/40 group-focus-within:text-primary transition-colors">
+                    <User size={16} />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Ej: Danilo Montero..."
+                    className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/5 rounded-2xl focus:border-primary/40 outline-none transition-all font-bold"
+                    value={autor}
+                    onChange={(e) => setAutor(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)] opacity-40 ml-4">Editor de Letra</label>
+                <div className="flex gap-1.5 p-1 bg-white/5 rounded-xl border border-white/5">
+                  {["INTRO", "VERSO 1", "CORO", "PUENTE"].map((lbl) => (
+                    <button
+                      key={lbl}
+                      onClick={() => addSection(lbl)}
+                      className="px-3 py-1.5 rounded-lg hover:bg-white/10 text-[9px] font-black text-primary uppercase tracking-widest transition-all"
+                    >
+                      + {lbl}
+                    </button>
                   ))}
                 </div>
-              ))}
+              </div>
+              <textarea
+                placeholder="Escribe o pega la letra aquí. Usa mayúsculas para las secciones (ej: VERSO 1, CORO)..."
+                className="w-full h-[350px] p-6 bg-white/5 border border-white/5 rounded-3xl focus:border-primary/40 outline-none transition-all font-mono text-sm leading-relaxed resize-none custom-scrollbar"
+                value={texts}
+                onChange={(e) => handleSong(e.target.value)}
+              />
             </div>
-            {/** 
-            <div className="w-1/4 px-2">
-              {CHORDS.slice(0, 7).map((chord, idx) => (
-                <div key={idx} className="text-[#251a4e] text-xl mb-1">
-                  {chord}
+          </div>
+        </div>
+
+        {/* Right: Preview & Chord Layering */}
+        <div className="space-y-6">
+          <div className="bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded-[2.5rem] p-8 h-full min-h-[500px] flex flex-col shadow-2xl relative overflow-hidden group">
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-3">
+                <Eye size={18} className="text-primary" />
+                <h2 className="text-xs font-black uppercase tracking-widest text-[var(--text-secondary)] opacity-40">Preview Interactivo</h2>
+              </div>
+              <div className="text-[10px] font-black text-primary uppercase tracking-widest px-3 py-1 bg-primary/10 rounded-full border border-primary/20">
+                Modo Edición Activo
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto custom-scrollbar pr-4 space-y-8 relative z-10">
+              {songComplet.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center opacity-20 py-20">
+                  <PenTool size={64} className="mb-4" />
+                  <p className="text-sm font-black uppercase tracking-widest">Empieza a escribir letra para poner acordes</p>
                 </div>
-              ))}
+              ) : (
+                songComplet.map((section, sIdx) => (
+                  <div key={sIdx} className="space-y-6">
+                    <div className="flex items-center gap-4">
+                      <div className="h-px flex-1 bg-gradient-to-r from-transparent via-primary/20 to-transparent"></div>
+                      <span className="text-xs font-black uppercase tracking-widest text-primary bg-primary/5 px-4 py-1.5 rounded-xl border border-primary/10">{section.type}</span>
+                      <div className="h-px flex-1 bg-gradient-to-r from-transparent via-primary/20 to-transparent"></div>
+                    </div>
+                    <div className="space-y-8">
+                      {section.lyrics.map((line, lIdx) => (
+                        <div key={lIdx} className="relative group/line">
+                          {/* Chords Layer */}
+                          <div className="flex flex-wrap min-h-[1.5rem] mb-1">
+                            {line.text.split("").map((char, cIdx) => (
+                              <div
+                                key={cIdx}
+                                onClick={() => setChordSelector({ sectionIdx: sIdx, lineIdx: lIdx, charIdx: cIdx })}
+                                className={`w-[1ch] h-6 flex items-center justify-center text-[11px] font-black cursor-pointer rounded-sm hover:bg-primary/20 transition-all ${line.chords?.[cIdx] ? 'text-primary' : 'text-transparent'}`}
+                              >
+                                {line.chords?.[cIdx] || "|"}
+                              </div>
+                            ))}
+                          </div>
+                          {/* Text Layer */}
+                          <div className="text-base font-medium tracking-wide text-[var(--text-primary)]">
+                            {line.text}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
-*/}
+
+            {/* Background Decor */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] rounded-full -mr-32 -mt-32"></div>
           </div>
         </div>
       </div>
 
+      {/* Chord Selector Modal */}
       {chordSelector && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-            <h2 className="text-lg font-bold mb-4">
-              Selecciona o escribe un acorde
-            </h2>
-            <input
-              type="text"
-              placeholder="Ej: G#m, Dsus4..."
-              className="w-full mb-3 px-3 py-2 border rounded"
-              value={customChord}
-              onChange={(e) => setCustomChord(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleCustomChordSubmit();
-              }}
-            />
-            <div className="grid grid-cols-4 gap-2">
-              {CHORDS.map((ch) => (
-                <button
-                  key={ch}
-                  onClick={() => applyChord(ch)}
-                  className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-2 rounded"
-                >
-                  {ch}
-                </button>
-              ))}
+        <div className="fixed inset-0 flex items-center justify-center z-[100] animate-in fade-in duration-300">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setChordSelector(null)}></div>
+          <div className="relative bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded-[3rem] p-8 md:p-10 w-full max-w-sm shadow-2xl animate-in zoom-in-95 duration-300">
+            <div className="flex justify-between items-center mb-8">
+              <div className="flex items-center gap-3">
+                <Search size={20} className="text-primary" />
+                <h2 className="font-black text-xl text-[var(--text-primary)] tracking-tight">Seleccionar Acorde</h2>
+              </div>
+              <button onClick={() => setChordSelector(null)} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition-all">
+                <X size={18} />
+              </button>
             </div>
-            <button
-              onClick={() => setChordSelector(null)}
-              className="mt-4 text-sm text-gray-600 underline"
-            >
-              Cancelar
-            </button>
+
+            <div className="space-y-6">
+              <input
+                type="text"
+                autoFocus
+                placeholder="Escribe (ej: G#m7)..."
+                className="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 outline-none focus:border-primary/40 font-bold"
+                value={customChord}
+                onChange={(e) => setCustomChord(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && applyChord(customChord)}
+              />
+
+              <div className="grid grid-cols-4 gap-2">
+                {CHORDS.map(ch => (
+                  <button
+                    key={ch}
+                    onClick={() => applyChord(ch)}
+                    className="py-2 rounded-xl bg-white/5 border border-white/5 hover:bg-primary hover:text-white transition-all text-xs font-black"
+                  >
+                    {ch}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() => applyChord(null)}
+                className="w-full py-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all"
+              >
+                <Trash2 size={14} className="inline mr-2" /> Eliminar Acorde
+              </button>
+            </div>
           </div>
         </div>
       )}

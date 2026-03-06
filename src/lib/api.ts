@@ -13,7 +13,7 @@ export const songs = async () => {
 }
 
 
-  export const createSong = async (data = {}) => {
+export const createSong = async (data = {}) => {
   try {
     const response = await apiInstancia.post(`/songs`, data);
     // console.log("post realizado correctamente", response)
@@ -23,7 +23,7 @@ export const songs = async () => {
   }
 };
 
- export const deleteSong = async (id=0) => {
+export const deleteSong = async (id = 0) => {
   try {
     const response = await apiInstancia.delete(`/songs/${id} `);
     // console.log("post realizado correctamente", response)
@@ -39,10 +39,10 @@ type SongData = {
   song: any[]; // o puedes definir una interfaz más precisa en lugar de `any[]`
   categories: any[]; // idem, si tienes una interfaz, úsala en lugar de `any[]`
 };
-export const updateSong = async (id:0, data:SongData) => {
- // console.log("data=> ", data, "id=>  ", id);
+export const updateSong = async (id: 0, data: SongData) => {
+  // console.log("data=> ", data, "id=>  ", id);
 
- // console.log("🌐 Llamando a:", `${CloudPhp}/category`);
+  // console.log("🌐 Llamando a:", `${CloudPhp}/category`);
 
   try {
     const response = await apiInstancia.put(`/songs/${id}`, {
@@ -57,7 +57,7 @@ export const updateSong = async (id:0, data:SongData) => {
 
 
 
-export const getSongById = async (id:number) => {
+export const getSongById = async (id: number) => {
   try {
     const response = await apiInstancia.get(`/songs/${id}`);
     // console.log("res=>:", response.data);
@@ -110,14 +110,41 @@ export const search = async (query: string) => {
 
 
 
-export const getGroupByID = async (id:number) => {
+export const getGroupByID = async (id: string | number, token?: string) => {
   try {
-    const response = await apiInstancia.get(`/groups/${id}`);
-    // console.log("res=>:", response.data);
-    return response.data; // Retorna la respuesta si necesitas manejarla en otro lugar
+    const response = await apiInstancia.get(`/groups/${id}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
+    });
+    return response.data;
   } catch (error) {
     console.error("Error al obtener el grupo:", error);
-    throw error; // Puedes lanzar el error para manejarlo en el componente que llama esta función
+    throw error;
+  }
+};
+
+export const createGroup = async (data: any, token: string) => {
+  try {
+    const response = await apiInstancia.post(`/groups`, data, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+  } catch (error: any) {
+    if (error.response) {
+      console.error("❌ Error de validación del servidor (422):", error.response.data);
+    }
+    throw error;
+  }
+};
+
+export const deleteGroup = async (id: number | string, token: string) => {
+  try {
+    const response = await apiInstancia.delete(`/groups/${id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error al eliminar el grupo:", error);
+    throw error;
   }
 };
 
@@ -134,14 +161,15 @@ export const repertorios = async () => {
 }
 
 
-export const repertoriosById = async (id:number) => {
+export const repertoriosById = async (id: number, token?: string) => {
   try {
-    const response = await apiInstancia.get(`/repertorios/${id}`);
-   // console.log("res=>:", response.data);
-    return response.data; // Retorna la respuesta si necesitas manejarla en otro lugar
+    const response = await apiInstancia.get(`/repertorios/${id}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
+    });
+    return response.data;
   } catch (error) {
-    console.error("Error al obtener cancion:", error);
-    throw error; // Puedes lanzar el error para manejarlo en el componente que llama esta función
+    console.error("Error al obtener repertorio:", error);
+    throw error;
   }
 };
 
@@ -159,7 +187,7 @@ export const createRepertorio = async (data = {}) => {
 
 // --- repertorio song categorys ---
 export const createRepertorioSongCategory = async (data = {}) => {
-  console.log("request",data)
+  console.log("request", data)
   try {
     const response = await apiInstancia.post(`/repertoriosongcategory`, data);
     // console.log("post realizado correctamente", response)
@@ -180,13 +208,13 @@ export const createRepertorioSongCategory = async (data = {}) => {
 
 
 //login 
-export const login = async (email:string, password:string) => {
+export const login = async (email: string, password: string) => {
   try {
     const response = await apiInstancia.post(`/login`, {
       email,
       password,
     });
-       console.log("datos del user=> ",response.data)
+    console.log("datos del user=> ", response.data)
     return response.data;
   } catch (error) {
     console.error("Error al obtener datos:", error);
@@ -207,9 +235,9 @@ export const LoginGoogle = async (tokenGoogle: string) => {
 
 
 
-export const getUserById = async (id:number, token:string) => {
+export const getUserById = async (id: number, token: string) => {
   //console.log("idUser  => ", id);
- // console.log("token id=> ", token);
+  // console.log("token id=> ", token);
   try {
     const response = await apiInstancia.get(`/user/${id}`, {
       headers: {
@@ -226,9 +254,9 @@ export const getUserById = async (id:number, token:string) => {
 };
 
 
-export const upDateUserById = async (id:number, token:string, data:{}) => {
+export const upDateUserById = async (id: number, token: string, data: {}) => {
   //console.log("idUser  => ", id);
- // console.log("token id=> ", token);
+  // console.log("token id=> ", token);
   try {
     const response = await apiInstancia.put(`/users/${id}`, data, {
       headers: {
@@ -248,13 +276,17 @@ export const upDateUserById = async (id:number, token:string, data:{}) => {
 
 
 //--- custom Songs -----
-export const createCustomSong = async (data:{}) => {
+export const createCustomSong = async (data: any, token: string) => {
   try {
-    const response = await apiInstancia.post(`/customSong`, data);
-    // console.log("este es el response=> ",response.data)
+    const response = await apiInstancia.post(`/customSong`, data, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
     return response.data;
-  } catch (error) {
-    console.error("Error  crear la categoria del repertorio:", error);
+  } catch (error: any) {
+    if (error.response) {
+      console.error("❌ ERROR 422 DETAILS FROM SERVER:", error.response.data);
+    }
+    console.error("Error al crear la canción personalizada:", error);
     throw error;
   }
 };
@@ -270,6 +302,20 @@ export const createCustomSongMultiple = async (data: any) => {
       console.error("HEADERS:", error.response?.headers);
     } else {
       console.error("ERROR DESCONOCIDO:", error);
+    }
+    throw error;
+  }
+};
+
+export const updateCustomSong = async (id: number, data: any, token: string) => {
+  try {
+    const response = await apiInstancia.put(`/customSong/${id}`, data, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+  } catch (error: any) {
+    if (error.response) {
+      console.error("❌ ERROR UPDATE CUSTOM SONG:", error.response.data);
     }
     throw error;
   }

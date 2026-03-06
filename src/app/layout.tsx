@@ -22,11 +22,13 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Musikoord",
   description: "App para gestionar y compartir canciones musicales",
-  icons:{
+  icons: {
     icon: '/icon.png',
     apple: "/apple-icon.png",
   }
 };
+
+import { ThemeProvider } from "@/context/ThemeContext";
 
 export default function RootLayout({
   children,
@@ -38,16 +40,18 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ToastContainer 
-          position="top-right"
-          autoClose={2000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          pauseOnHover
-          draggable
-        />
-        {children}
+        <ThemeProvider>
+          <ToastContainer
+            position="top-right"
+            autoClose={2000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            pauseOnHover
+            draggable
+          />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
