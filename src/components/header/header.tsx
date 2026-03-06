@@ -78,7 +78,7 @@ const Header = () => {
         {user ? (
           <div className="flex items-center gap-4 md:gap-6">
             <div
-              className="flex items-center gap-3 bg-white/5 hover:bg-white/10 p-1 pr-4 rounded-full transition-all cursor-pointer border border-white/10"
+              className="flex items-center gap-2 md:gap-3 bg-[var(--glass-bg)] hover:bg-[var(--glass-hover-bg)] p-1 pr-4 rounded-full transition-all cursor-pointer border border-[var(--glass-border)]"
               onClick={() => router.push("/dashuser/settings")}
             >
               <img

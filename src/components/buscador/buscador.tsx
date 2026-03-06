@@ -68,7 +68,7 @@ export default function Buscador({ onSearchTermSubmit }: Props) {
         <input
           type="text"
           placeholder="Buscar canciones o repertorios..."
-          className="w-full bg-transparent outline-none text-base font-medium placeholder:text-white/20"
+          className="w-full bg-transparent outline-none text-base font-medium placeholder:text-slate-400 dark:placeholder:text-white/20"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           onKeyDown={handleKeyDown}

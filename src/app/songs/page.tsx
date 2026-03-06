@@ -84,40 +84,47 @@ const Page = () => {
       .replace(/(^-|-$)/g, "");
 
   return (
-    <div className="min-h-screen flex flex-col max-w-7xl mx-auto w-full transition-colors duration-500">
+    <div className="min-h-screen flex flex-col max-w-7xl mx-auto w-full transition-colors duration-500 text-[var(--text-primary)]">
       <Header />
 
       <div className="flex flex-1 flex-col md:flex-row px-4 md:px-8 py-8 gap-8">
         {/* Sidebar Filtros */}
-        <aside className="w-full md:w-72 space-y-6">
-          <div className="glass-card rounded-3xl p-6 sticky top-24">
-            <div className="flex items-center gap-2 mb-6 text-primary">
-              <Filter size={20} />
-              <h2 className="text-xl font-black tracking-tight">Filtros</h2>
+        <aside className="w-full md:w-80 space-y-6">
+          <div className="glass-card rounded-[2.5rem] p-8 sticky top-24 border border-[var(--glass-border)] shadow-xl shadow-black/5">
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-3 text-primary">
+                <div className="p-2 rounded-xl bg-primary/10">
+                  <Filter size={20} className="animate-pulse" />
+                </div>
+                <h2 className="text-2xl font-black tracking-tighter">Filtros</h2>
+              </div>
+              <button className="text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)] hover:text-primary transition-colors cursor-pointer">
+                Reiniciar
+              </button>
             </div>
 
-            {Object.entries(filters).map(([key, values]) => (
-              <div className="mb-6 last:mb-0" key={key}>
-                <h3 className="text-xs font-bold uppercase tracking-widest text-white/40 mb-4">{key}</h3>
-                <div className="space-y-3">
-                  {values.map((v) => (
-                    <label key={v} className="flex items-center gap-3 cursor-pointer group">
-                      <div className="relative flex items-center justify-center">
-                        <input type="checkbox" className="peer appearance-none w-5 h-5 rounded-lg border-2 border-white/10 checked:bg-primary checked:border-primary transition-all duration-300" />
-                        <div className="absolute opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
-                          <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                          </svg>
-                        </div>
-                      </div>
-                      <span className="text-sm font-medium text-white/70 group-hover:text-white transition-colors">{v}</span>
-                    </label>
-                  ))}
+            <div className="space-y-8">
+              {Object.entries(filters).map(([key, values]) => (
+                <div key={key} className="relative">
+                  <div className="flex items-center gap-2 mb-4">
+                    <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--text-secondary)] opacity-80">{key}</h3>
+                    <div className="h-[1px] flex-1 bg-[var(--glass-border)]"></div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {values.map((v) => (
+                      <label key={v} className="relative group cursor-pointer inline-flex">
+                        <input type="checkbox" className="peer hidden" />
+                        <span className="px-4 py-2 rounded-xl text-xs font-bold border-2 border-[var(--glass-border)] bg-[var(--glass-bg)] text-[var(--text-secondary)] peer-checked:bg-primary peer-checked:border-primary peer-checked:text-white transition-all duration-300 hover:border-primary/30">
+                          {v}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
 
-            <button className="w-full mt-8 py-3 bg-gradient-to-r from-primary to-secondary rounded-2xl font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform duration-300">
+            <button className="w-full mt-10 py-4 bg-gradient-to-r from-primary via-secondary to-accent rounded-2xl font-black text-xs uppercase tracking-widest text-white shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:scale-[1.02] active:scale-95 transition-all duration-500">
               Aplicar Filtros
             </button>
           </div>
@@ -147,7 +154,7 @@ const Page = () => {
 
               {/* Resultados Canciones */}
               <div className="space-y-4 mb-12">
-                <div className="flex items-center gap-2 mb-4 text-white/40">
+                <div className="flex items-center gap-2 mb-4 text-[var(--text-secondary)] opacity-50">
                   <Music size={18} />
                   <span className="text-sm font-bold uppercase tracking-widest">Canciones</span>
                 </div>
@@ -162,13 +169,13 @@ const Page = () => {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-white/30 italic">No se encontraron canciones.</p>
+                  <p className="text-[var(--text-secondary)] opacity-50 italic">No se encontraron canciones.</p>
                 )}
               </div>
 
               {/* Resultados Repertorios */}
               <div className="space-y-4">
-                <div className="flex items-center gap-2 mb-4 text-white/40">
+                <div className="flex items-center gap-2 mb-4 text-[var(--text-secondary)] opacity-50">
                   <ListMusic size={18} />
                   <span className="text-sm font-bold uppercase tracking-widest">Repertorios</span>
                 </div>
@@ -183,7 +190,7 @@ const Page = () => {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-white/30 italic">No se encontraron repertorios.</p>
+                  <p className="text-[var(--text-secondary)] opacity-50 italic">No se encontraron repertorios.</p>
                 )}
               </div>
             </div>
@@ -238,29 +245,29 @@ const Page = () => {
 const SongCard = ({ cancion, onClick }: { cancion: Song; onClick: () => void }) => (
   <div
     onClick={onClick}
-    className="glass-card rounded-3xl p-6 group cursor-pointer hover:border-primary/50 transition-all duration-500"
+    className="glass-card rounded-[2rem] p-6 group cursor-pointer border border-slate-200 dark:border-white/10 hover:border-primary/50 transition-all duration-500 shadow-lg shadow-black/5"
   >
     <div className="flex items-start justify-between mb-4">
-      <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+      <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all duration-500">
         <Music size={24} />
       </div>
       {cancion?.tono && (
-        <span className="px-3 py-1 bg-white/5 rounded-full text-[10px] font-black text-secondary tracking-widest uppercase border border-white/5">
+        <span className="px-3 py-1 bg-slate-100 dark:bg-white/5 rounded-full text-[10px] font-black text-secondary tracking-widest uppercase border border-slate-200 dark:border-white/5">
           Tono: {cancion.tono}
         </span>
       )}
     </div>
 
-    <h3 className="text-xl font-black mb-1 group-hover:text-primary transition-colors line-clamp-1">
+    <h3 className="text-xl font-black mb-1 text-[var(--text-primary)] group-hover:text-primary transition-colors line-clamp-1">
       {cancion.name || cancion.title}
     </h3>
-    <p className="text-sm text-white/50 mb-4 line-clamp-1">{cancion.autor || "Autor Desconocido"}</p>
+    <p className="text-sm text-[var(--text-secondary)] mb-4 line-clamp-1">{cancion.autor || "Autor Desconocido"}</p>
 
     <div className="flex items-center justify-between mt-auto">
-      <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest bg-white/5 px-2 py-1 rounded">
+      <span className="text-[10px] font-bold text-[var(--text-secondary)] opacity-60 uppercase tracking-widest bg-[var(--glass-bg)] px-2 py-1 rounded">
         {cancion?.categories?.[0]?.name || "General"}
       </span>
-      <ChevronRight className="text-white/20 group-hover:text-primary group-hover:translate-x-1 transition-all" size={20} />
+      <ChevronRight className="text-[var(--text-secondary)] opacity-30 group-hover:text-primary group-hover:translate-x-1 transition-all" size={20} />
     </div>
   </div>
 );
@@ -268,25 +275,25 @@ const SongCard = ({ cancion, onClick }: { cancion: Song; onClick: () => void }) 
 const RepertorioCard = ({ rep, onClick }: { rep: Repertorio; onClick: () => void }) => (
   <div
     onClick={onClick}
-    className="glass-card rounded-3xl p-6 group cursor-pointer border-l-4 border-l-secondary hover:border-l-primary transition-all duration-500 flex items-center gap-6"
+    className="glass-card rounded-[2rem] p-6 group cursor-pointer border-l-4 border-l-secondary hover:border-l-primary border-y border-r border-slate-200 dark:border-white/10 transition-all duration-500 flex items-center gap-6 shadow-lg shadow-black/5"
   >
     <div className="w-14 h-14 rounded-2xl bg-secondary/10 text-secondary flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
       <ListMusic size={28} />
     </div>
 
     <div className="flex-1">
-      <h3 className="text-lg font-black tracking-tight group-hover:text-primary transition-colors">
+      <h3 className="text-lg font-black tracking-tight text-[var(--text-primary)] group-hover:text-primary transition-colors">
         {rep.nombre || rep.titulo}
       </h3>
       <div className="flex items-center gap-4 mt-1">
-        <span className="text-[10px] font-bold text-white/40 uppercase">Fecha: {rep.fecha || "Reciente"}</span>
+        <span className="text-[10px] font-bold text-[var(--text-secondary)] opacity-60 uppercase">Fecha: {rep.fecha || "Reciente"}</span>
         <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded ${rep.privado ? 'bg-accent/10 text-accent' : 'bg-green-500/10 text-green-500'}`}>
           {rep.privado ? 'Privado' : 'Público'}
         </span>
       </div>
     </div>
 
-    <ChevronRight className="text-white/10 group-hover:text-primary transition-colors" size={24} />
+    <ChevronRight className="text-[var(--text-secondary)] opacity-30 group-hover:text-primary transition-colors" size={24} />
   </div>
 );
 

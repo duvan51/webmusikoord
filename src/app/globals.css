@@ -6,6 +6,8 @@
   --color-accent: #f43f5e;
 }
 
+@variant dark (&:where(.dark, .dark *));
+
 :root {
   /* Dark mode default */
   --background-start: #251a4e;
